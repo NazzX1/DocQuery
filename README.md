@@ -1,4 +1,4 @@
-# DocQuery
+<h1 align='center'>DocQuery</h1>
 
 This project leverages AI to efficiently search, retrieve, and answer questions from documents. It processes text chunks, embeds them for similarity search, and provides contextual responses based on the user's query.
 
