@@ -1,7 +1,5 @@
 from langchain_chroma import Chroma
 from utils import utils
-import chromadb.utils.embedding_functions as embedding_functions
-from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 from dotenv import load_dotenv
 import chromadb
@@ -10,15 +8,13 @@ import chromadb
 _ = load_dotenv()
 
 
-embedding_function = HuggingFaceEmbeddings()
 
 
 class db_helper:
     def __init__(self) -> None:
         self.db = None
-        self.connect()
 
-    def connect(self):
+    def connect(self, embedding_function):
         self.db = Chroma(
         persist_directory="./chroma_db", embedding_function=embedding_function
         )

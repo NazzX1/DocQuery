@@ -1,21 +1,44 @@
 from dotenv import load_dotenv
-import os
+from langchain_ollama import OllamaEmbeddings, ChatOllama
+from langchain.prompts import ChatPromptTemplate
+from langchain_chroma import Chroma
 
-import google.generativeai as genai
 
 class EmbedderManager:
     def __init__(self) -> None:
-        self.__connectToLLM()
+        self.prompt_template = """
+        I'm answering the question ({question}) based only on the following context:
 
+        {context}
 
-    def __connectToLLM(self):
-        genai.configure(api_key = os.getenv("GG_GENAI_API_KEY"))
-        print("[INFO] connected to LLM")
+        ---
+        """
+        self.llm = self.__connectToLLM("granite3-dense", 0.8, 256)
+        self.embedding_func = self.getEmbeddingFunc("granite3-dense")
 
-    def get_embedding(self, content):
-        result = genai.embed_content(
-            model = "models/embedding-001",
-            content = content,
-            task_type = "retrieval_document" 
-            ) 
-        return result['embedding']
+    def __connectToLLM(self, model: str, temperature: float, num_predict: int):
+        return ChatOllama(
+            model=model,
+            temperature=temperature,
+            num_predict=num_predict,
+        )
+
+    def getEmbeddingFunc(self, model: str):
+        return OllamaEmbeddings(model=model)
+
+    def query(self, query_content, db: Chroma):
+
+        results = db.similarity_search_with_score(query_content, k=5)
+        
+        context_text = "\n\n---\n\n".join([doc.page_content for doc, _ in results])
+        
+        prompt_template = ChatPromptTemplate.from_template(self.prompt_template)
+        prompt = prompt_template.format(context=context_text, question=query_content)
+        
+        response = self.llm.invoke(prompt)
+        response_text = getattr(response, "content", "").strip()
+
+        sources = [doc.metadata.get("id", "Unknown") for doc, _ in results]
+        formatted_response = f"Response:\n {response_text}\n\nSources: {sources}"
+
+        return response_text, formatted_response
