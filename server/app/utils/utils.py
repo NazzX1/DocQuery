@@ -3,7 +3,7 @@ from langchain.schema.document import Document
 
 def add_ids_to_chunks(chunks : list[Document]) -> list[Document]:
         """
-        id : source:page:chunk_number
+        generate id for the chunks [id =  source : page : chunk_number]
 
         """
 
