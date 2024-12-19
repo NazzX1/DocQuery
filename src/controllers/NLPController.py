@@ -98,7 +98,7 @@ class NLPController(BaseController):
         return results
     
 
-    def answer_rag_question(self,project : Project,  query : str, limit : int = 1):
+    def answer_rag_question(self,project : Project,  query : str, limit : int = 3):
 
         # 1 retrieve related document
 
@@ -109,7 +109,7 @@ class NLPController(BaseController):
         )
 
         if not retrieved_document or len(retrieved_document) == 0:
-            return None
+            return None, None
         
 
         # 2 LLM prompt

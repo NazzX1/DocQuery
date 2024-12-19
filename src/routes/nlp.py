@@ -15,8 +15,8 @@ npl_router = APIRouter(
     tags = ["api_v1", "nlp"]
 )
 
-@npl_router.post("/index/push/{project_id}")
-async def index_project(request : Request, project_id : str, push_request : PushRequest):
+@npl_router.post("/index/push/{email}/{project_id}")
+async def index_project(request : Request, project_id : str, email : str,  push_request : PushRequest):
 
     project_model = await ProjectModel.create_instance(
         db_client = request.app.db_client
@@ -25,7 +25,8 @@ async def index_project(request : Request, project_id : str, push_request : Push
     chunk_model = await ChunkModel.create_instance(db_client = request.app.db_client)
 
     project = await project_model.get_project_or_create_one(
-        project_id = project_id
+        project_id = project_id, 
+        email = email 
     )
 
     if not project:
@@ -84,8 +85,8 @@ async def index_project(request : Request, project_id : str, push_request : Push
     )
 
 
-@npl_router.get("/index/info/{project_id}")
-async def get_project_index_info(request : Request, project_id : str):
+@npl_router.get("/index/info/{email}/{project_id}")
+async def get_project_index_info(request : Request, project_id : str, email : str):
     
     project_model = await ProjectModel.create_instance(
         db_client = request.app.db_client
@@ -93,7 +94,8 @@ async def get_project_index_info(request : Request, project_id : str):
 
 
     project = await project_model.get_project_or_create_one(
-        project_id = project_id
+        project_id = project_id,
+        email = email
     )
 
     nlp_controller = NLPController(request.app.vectordb_client,
@@ -110,15 +112,16 @@ async def get_project_index_info(request : Request, project_id : str):
     )
 
 
-@npl_router.post("/index/search/{project_id}")
-async def search_index(request : Request, project_id : str, search_request : SearchRequest):
+@npl_router.post("/index/search/{email}/{project_id}")
+async def search_index(request : Request, project_id : str,email : str,  search_request : SearchRequest):
     project_model = await ProjectModel.create_instance(
         db_client = request.app.db_client
     )
 
 
     project = await project_model.get_project_or_create_one(
-        project_id = project_id
+        project_id = project_id,
+        email = email
     )
 
     nlp_controller = NLPController(request.app.vectordb_client,
@@ -144,15 +147,16 @@ async def search_index(request : Request, project_id : str, search_request : Sea
 
 
 
-@npl_router.post("/index/answer/{project_id}")
-async def answer_index(request : Request, project_id : str, search_request : SearchRequest):
+@npl_router.post("/index/answer/{email}/{project_id}")
+async def answer_index(request : Request, project_id : str, email : str,  search_request : SearchRequest):
     project_model = await ProjectModel.create_instance(
         db_client = request.app.db_client
     )
 
 
     project = await project_model.get_project_or_create_one(
-        project_id = project_id
+        project_id = project_id,
+        email = email
     )
 
     nlp_controller = NLPController(request.app.vectordb_client,

@@ -20,3 +20,8 @@ class ResponseSignal(Enum):
     VECTORDB_SEARCH_SUCCESS = "vectordb search success"
     ANSWER_ERROR = "answer error"
     ANSWER_SUCCESS = "answer success"
+    USER_REGISTER_SUCCESS = "user register sucess"
+    USER_REGISTER_ERROR = "user register error : email already in use"
+    USER_LOGIN_SUCCESS = "user login sucess"
+    USER_LOGIN_ERROR = "user login error"
+

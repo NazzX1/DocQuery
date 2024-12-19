@@ -24,8 +24,8 @@ data_router = APIRouter(
 
 
 
-@data_router.post("/upload/{project_id}")
-async def upload_data(request : Request, project_id : str, file : UploadFile,
+@data_router.post("/upload/{email}/{project_id}")
+async def upload_data(request : Request, project_id : str, email : str, file : UploadFile,
                       app_settings : Settings = Depends(get_settings)):
     
     
@@ -35,7 +35,8 @@ async def upload_data(request : Request, project_id : str, file : UploadFile,
 
 
     project = await project_model.get_project_or_create_one(
-        project_id = project_id
+        project_id = project_id,
+        email = email
     )
     
     
@@ -93,8 +94,8 @@ async def upload_data(request : Request, project_id : str, file : UploadFile,
         )
 
 
-@data_router.post("/process/{project_id}")
-async def process_endpoint(request : Request, project_id : str, process_request : ProcessRequest):
+@data_router.post("/process/{email}/{project_id}")
+async def process_endpoint(request : Request, project_id : str, email : str, process_request : ProcessRequest):
     
     chunk_size = process_request.chunk_size
     overlap_size = process_request.overlap_size
@@ -108,7 +109,8 @@ async def process_endpoint(request : Request, project_id : str, process_request 
 
 
     project = await project_model.get_project_or_create_one(
-        project_id = project_id
+        project_id = project_id,
+        email = email
     )
 
     asset_model = await AssetModel.create_instance(

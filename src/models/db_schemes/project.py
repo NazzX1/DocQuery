@@ -6,6 +6,7 @@ class Project(BaseModel):
 
     id : Optional[ObjectId] = Field(None, alias="_id")
     project_id : str = Field(..., min_length=1)
+    project_owner_email : str
 
     @validator('project_id')
     def validate_project_id(cls, value):
