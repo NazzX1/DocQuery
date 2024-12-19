@@ -23,7 +23,7 @@ class OpenAIProvider(LLMInterface):
 
         self.client = OpenAI(
             api_key = self.api_key,
-            api_url = self.api_url
+            base_url = self.api_url
         )
 
 
@@ -53,7 +53,7 @@ class OpenAIProvider(LLMInterface):
         max_output_token = max_output_token if max_output_token is not None else self.default_generation_max_output_tokens
         temperature = temperature if temperature is not None else self.default_generation_temprature
 
-        chat_history.append(self.costruct_prompt(prompt=prompt), role = OpenAIEnums.USER.value)
+        chat_history.append(self.construct_prompt(prompt=prompt, role = OpenAIEnums.USER.value))
 
         response = self.client.chat.completions.create(
             model = self.generation_model_id,
@@ -66,7 +66,7 @@ class OpenAIProvider(LLMInterface):
             self.logger.error("Error occurred while generating text with OpenAI")
             return None
 
-        return response.choices[0].message        
+        return response.choices[0].message.content        
 
 
     
@@ -94,7 +94,7 @@ class OpenAIProvider(LLMInterface):
     
 
 
-    def costruct_prompt(self, prompt : str, role : str):
+    def construct_prompt(self, prompt : str, role : str):
         return {
             "role" : role,
             "content" : self.process_text(prompt)
