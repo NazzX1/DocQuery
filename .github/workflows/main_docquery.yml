@@ -6,12 +6,11 @@ on:
       - main
 
 env:
-  AZURE_WEBAPP_NAME: "docquery"  
-  AZURE_RESOURCE_GROUP: "nizargroup"  
-  AZURE_PLAN_NAME: "ASP-nizargroup-ad49"  
-  AZURE_REGION: "Canada Central"  
-  AZURE_CONTAINER_REGISTRY: "dockerrag.azurecr.io"  
- 
+  AZURE_WEBAPP_NAME: "docquery"
+  AZURE_RESOURCE_GROUP: "nizargroup"
+  AZURE_PLAN_NAME: "ASP-nizargroup-ad49"
+  AZURE_REGION: "Canada Central"
+  AZURE_CONTAINER_REGISTRY: "dockerrag.azurecr.io"
 
 jobs:
   deploy:
@@ -32,12 +31,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Login to Azure using Azure CLI
+        run: |
+          echo "${{ secrets.AZURE_CREDENTIALS }}" > azure_credentials.json
+          az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
       - name: Build and Push Docker Image
         working-directory: ./docker
         run: |
           docker build -t $AZURE_WEBAPP_NAME .
-          docker tag $AZURE_WEBAPP_NAME:latest <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
-          docker push <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
+          docker tag $AZURE_WEBAPP_NAME:latest $AZURE_CONTAINER_REGISTRY/$AZURE_WEBAPP_NAME:latest
+          docker push $AZURE_CONTAINER_REGISTRY/$AZURE_WEBAPP_NAME:latest
 
       - name: Deploy FastAPI App
         run: |
@@ -45,4 +49,4 @@ jobs:
             --resource-group $AZURE_RESOURCE_GROUP \
             --plan $AZURE_PLAN_NAME \
             --name $AZURE_WEBAPP_NAME \
-            --deployment-container-image-name <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
+            --deployment-container-image-name $AZURE_CONTAINER_REGISTRY/$AZURE_WEBAPP_NAME:latest
