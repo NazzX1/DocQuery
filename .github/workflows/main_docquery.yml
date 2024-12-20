@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.12.7
+          python-version: 3.9
 
       - name: Install Dependencies
         working-directory: ./src
@@ -32,26 +32,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Load Environment Variables
-        working-directory: ./src  
+      - name: Build and Push Docker Image
+        working-directory: ./docker
         run: |
-          echo "Loading environment variables from .env"
-          export $(cat .env | xargs)
+          docker build -t $AZURE_WEBAPP_NAME .
+          docker tag $AZURE_WEBAPP_NAME:latest <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
+          docker push <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
 
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Deploy FastAPI App to Azure
+      - name: Deploy FastAPI App
         run: |
-          # Create or update the app service with your app's configuration
-          az webapp up \
-            --name $AZURE_WEBAPP_NAME \
+          az webapp create \
             --resource-group $AZURE_RESOURCE_GROUP \
             --plan $AZURE_PLAN_NAME \
-            --location $AZURE_REGION \
-            --runtime "PYTHON|3.9"  # Adjust runtime if needed
-
-          # Optionally, you can configure App Service to pull directly from your GitHub repository:
-          # az webapp deployment source config --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --repo-url https://github.com/<your-github-repo> --branch main --manual-integration
+            --name $AZURE_WEBAPP_NAME \
+            --deployment-container-image-name <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
