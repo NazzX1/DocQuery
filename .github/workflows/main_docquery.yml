@@ -31,10 +31,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Login to Azure using Azure CLI
+      - name: Login to Azure using Service Principal
         run: |
-          echo "${{ secrets.AZURE_CREDENTIALS }}" > azure_credentials.json
-          az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az login --service-principal \
+            --username ${{ secrets.AZURE_CLIENT_ID }} \
+            --password ${{ secrets.AZURE_CLIENT_SECRET }} \
+            --tenant ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Build and Push Docker Image
         working-directory: ./docker
