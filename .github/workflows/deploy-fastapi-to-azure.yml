@@ -6,10 +6,12 @@ on:
       - main
 
 env:
-  AZURE_WEBAPP_NAME: "fqsapi-app"  
-  AZURE_RESOURCE_GROUP: "fqsapi-resource-group"  
-  AZURE_PLAN_NAME: "fqsapi-plan"  
-  AZURE_REGION: "East US"  
+  AZURE_WEBAPP_NAME: "docquery"  
+  AZURE_RESOURCE_GROUP: "nizargroup"  
+  AZURE_PLAN_NAME: "ASP-nizargroup-ad49"  
+  AZURE_REGION: "Canada Central"  
+  AZURE_CONTAINER_REGISTRY: "dockerrag.azurecr.io"  
+ 
 
 jobs:
   deploy:
