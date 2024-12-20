@@ -183,6 +183,7 @@ async def answer_index(request : Request, project_id : str, email : str,  search
     return JSONResponse(
         content={
             "signal": ResponseSignal.ANSWER_SUCCESS.value,
-            "anwser" : answer
+            "anwser" : answer,
+            "prompt" : full_prompt
         }
     )

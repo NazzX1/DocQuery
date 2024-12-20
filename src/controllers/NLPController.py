@@ -98,7 +98,7 @@ class NLPController(BaseController):
         return results
     
 
-    def answer_rag_question(self,project : Project,  query : str, limit : int = 3):
+    def answer_rag_question(self,project : Project,  query : str, limit : int = 1):
 
         # 1 retrieve related document
 
