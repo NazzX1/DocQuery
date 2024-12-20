@@ -8,10 +8,11 @@ from models.db_schemes import RetrievedDocument
 class QdrantDBProvider(VectorDBInterface):
 
 
-    def __init__(self, db_path : str, distance_method : str):
+    def __init__(self, url : str, api_key : str, distance_method : str):
         super().__init__()
         self.client = None
-        self.db_path = db_path
+        self.url = url
+        self.api_key = api_key
         self.distance_method = distance_method
 
         if distance_method == DistanceMethodsEnums.COSINE.value:
@@ -24,7 +25,8 @@ class QdrantDBProvider(VectorDBInterface):
 
 
     def connect(self):
-        self.client = QdrantClient(path = self.db_path)
+        self.client = QdrantClient(url=self.url,
+    api_key=self.api_key,)
 
     def disconnect(self):
         self.client = None
