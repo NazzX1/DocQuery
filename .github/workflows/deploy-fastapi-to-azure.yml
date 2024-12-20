@@ -1,0 +1,57 @@
+name: Deploy FastAPI to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_WEBAPP_NAME: "fqsapi-app"  
+  AZURE_RESOURCE_GROUP: "fqsapi-resource-group"  
+  AZURE_PLAN_NAME: "fqsapi-plan"  
+  AZURE_REGION: "East US"  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9  
+
+      - name: Install Dependencies
+        working-directory: ./src  
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Load Environment Variables
+        working-directory: ./src  
+        run: |
+          echo "Loading environment variables from .env"
+          export $(cat .env | xargs)
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and Push Docker Image
+        working-directory: ./docker  
+        run: |
+          docker build -t $AZURE_WEBAPP_NAME .
+          docker tag $AZURE_WEBAPP_NAME:latest <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
+          docker push <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
+
+      - name: Deploy FastAPI App
+        run: |
+          az webapp create \
+            --resource-group $AZURE_RESOURCE_GROUP \
+            --plan $AZURE_PLAN_NAME \
+            --name $AZURE_WEBAPP_NAME \
+            --deployment-container-image-name <AZURE_CONTAINER_REGISTRY_URL>/$AZURE_WEBAPP_NAME:latest
