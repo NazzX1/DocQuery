@@ -212,3 +212,29 @@ async def process_endpoint(request : Request, project_id : str, email : str, pro
                 "processed_files" : nb_file
             }
         )
+
+
+
+@data_router.get("/process/{email}")
+async def projects_endpoint(request : Request, email : str):
+
+    project_model = await ProjectModel.create_instance(
+        db_client= request.app.db_client
+    )
+
+    results = await project_model.get_project_by_user(email = email)
+
+    if results is None or len(results) == 0:
+        return JSONResponse(
+            status_code= status.HTTP_400_BAD_REQUEST,
+            content={
+                "signal" : ResponseSignal.NO_PROJECTS_ERROR.value
+            }
+        )
+    
+    return JSONResponse(
+            content={
+                "signal" : ResponseSignal.PROJECTS_FOUND.value,
+                "results" : [res.project_id for res in results]
+            }
+        )

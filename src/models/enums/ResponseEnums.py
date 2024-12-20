@@ -24,4 +24,6 @@ class ResponseSignal(Enum):
     USER_REGISTER_ERROR = "user register error : email already in use"
     USER_LOGIN_SUCCESS = "user login sucess"
     USER_LOGIN_ERROR = "user login error"
+    NO_PROJECTS_ERROR = "no projects found"
+    PROJECTS_FOUND = "projects found"
 

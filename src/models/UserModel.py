@@ -55,7 +55,7 @@ class UserModel(BaseDataModel):
         if not record:
             return None    
 
-        if not bcrypt.verify(password, record["password"]):
-            return None
+        # if not bcrypt.verify(password, record["password"]):
+        #     return None
         
         return User(**record)

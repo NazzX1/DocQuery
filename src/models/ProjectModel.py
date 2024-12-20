@@ -74,3 +74,21 @@ class ProjectModel(BaseDataModel):
             )
 
         return projects, total_pages
+
+    
+
+    async def get_project_by_user(self, email : str):
+
+        records = await self.collection.find({
+            "project_owner_email" : email
+        }).to_list(length = None)
+
+        if records is None:
+            
+            return None
+        
+        return [
+                Project(**rec)
+                for rec in records
+                ]
+    
